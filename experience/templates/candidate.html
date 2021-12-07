@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        input {
+            border:solid 1px #848388;
+            font-size:14px;
+            padding-left:20px;
+            line-height:14px;
+            width:250px;
+            height: 80px;
+            margin-top: 10px;
+            background-color: #9999FF;
+        }
+        input:focus {
+            background-color: #000099;
+        }
+        .centered {
+         	    position: fixed;
+                top: 20%;
+                left: 50%;
+                width: 250px;
+                height:200px;
+                transform: translate(-50%, -50%);
+                }
+    </style>
+</head>
+<body>
+<div class="centered">
+ {% csrf_token %}
+    <form method="POST" enctype="multipart/form-data">
+          <input class="btn btn-success" type="submit" value="POST"/>
+          </form>
+        <form method="GET" enctype="multipart/form-data">
+          <input class="btn btn-success" type="submit" value="GET"/>
+          </form>
+            {{ result }}
+    </div>
+
+
+
+</body>
+</html>
