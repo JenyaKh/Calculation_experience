@@ -32,11 +32,11 @@ class CandidateSerializer(serializers.ModelSerializer):
             Experience.objects.create(candidate=candidate, **experience)
 
         date_format = "%b %Y"
-        work_experience = candidate.experiences.all().order_by('start')
+        work_experience = candidate.experiences.all()
         start_work = datetime.strptime(work_experience[0].start, date_format)
         end_work = datetime.strptime(work_experience[0].end, date_format)
-        total = end_work - start_work
-        print(total.days/30)
+        total = (end_work - start_work).days//30 + 1
+        print(total)
 
         for experience in work_experience[1:]:
             start_exp = datetime.strptime(experience.start, date_format)
@@ -44,15 +44,21 @@ class CandidateSerializer(serializers.ModelSerializer):
 
             if start_exp < end_work:
                 if end_exp > end_work:
-                    total += end_exp - end_work
+                    total += (end_exp - end_work).days//30
+                    print(total)
 
-            if start_exp >= end_work:
-                total += end_exp - start_exp
+            if start_exp > end_work:
+                total += (end_exp - start_exp).days//30 + 1
+                print(total)
+
+            if start_exp == end_work:
+                total += (end_exp - start_exp).days//30
+                print(total)
 
             if end_exp > end_work:
                 end_work = end_exp
 
-        total = total.days // 365
+        total = total//12
         candidate.total_experience = total
         candidate.save()
 
