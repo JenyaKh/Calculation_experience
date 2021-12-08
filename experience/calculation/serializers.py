@@ -32,33 +32,56 @@ class CandidateSerializer(serializers.ModelSerializer):
             Experience.objects.create(candidate=candidate, **experience)
 
         date_format = "%b %Y"
+        all_experience = []
+
+        # get the entire experience of this candidate
         work_experience = candidate.experiences.all()
-        start_work = datetime.strptime(work_experience[0].start, date_format)
-        end_work = datetime.strptime(work_experience[0].end, date_format)
+
+        # converting the start and end date of work to the datetime format
+        for experience in work_experience:
+            all_experience.append([datetime.strptime(experience.start, date_format),
+                                   datetime.strptime(experience.end, date_format)])
+
+        # sorting work experience by start date
+        all_experience.sort()
+
+        # assign the variables the start and end date of the candidate's first job
+        start_work = all_experience[0][0]
+        end_work = all_experience[0][1]
+
+        # calculate the seniority in the first place of work, including the first and last months
         total = (end_work - start_work).days//30 + 1
         print(total)
+        # calculate the experience for the following jobs
+        for experience in all_experience[1:]:
+            start_exp = experience[0]
+            end_exp = experience[1]
 
-        for experience in work_experience[1:]:
-            start_exp = datetime.strptime(experience.start, date_format)
-            end_exp = datetime.strptime(experience.end, date_format)
-
+        # if the start date of the new job is before the end of the previous one
+        # and the end date is greater than the previous one
             if start_exp < end_work:
                 if end_exp > end_work:
                     total += (end_exp - end_work).days//30
                     print(total)
 
+        # if the start date of the new job is greater than the end date of the previous one
             if start_exp > end_work:
                 total += (end_exp - start_exp).days//30 + 1
                 print(total)
 
+        # if the start date of the new job is equal to the end date of the previous one
             if start_exp == end_work:
                 total += (end_exp - start_exp).days//30
                 print(total)
 
+        # if the end date of the new job is greater than the end date of the previous one,
+        # update the value end_work
             if end_exp > end_work:
                 end_work = end_exp
 
+        # calculate the total experience in years
         total = total//12
+        # updating the total experience field in the candidate model
         candidate.total_experience = total
         candidate.save()
 
