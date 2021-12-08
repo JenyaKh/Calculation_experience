@@ -51,7 +51,7 @@ class CandidateSerializer(serializers.ModelSerializer):
 
         # calculate the seniority in the first place of work, including the first and last months
         total = (end_work - start_work).days//30 + 1
-        print(total)
+
         # calculate the experience for the following jobs
         for experience in all_experience[1:]:
             start_exp = experience[0]
@@ -62,17 +62,14 @@ class CandidateSerializer(serializers.ModelSerializer):
             if start_exp < end_work:
                 if end_exp > end_work:
                     total += (end_exp - end_work).days//30
-                    print(total)
 
         # if the start date of the new job is greater than the end date of the previous one
             if start_exp > end_work:
                 total += (end_exp - start_exp).days//30 + 1
-                print(total)
 
         # if the start date of the new job is equal to the end date of the previous one
             if start_exp == end_work:
                 total += (end_exp - start_exp).days//30
-                print(total)
 
         # if the end date of the new job is greater than the end date of the previous one,
         # update the value end_work
